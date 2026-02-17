@@ -1,5 +1,5 @@
 import streamlit as st 
-import time
+import time, random
 
 st.sidebar.header("Ejercicios")
 
@@ -31,6 +31,7 @@ else:
 
 st.write("\n")
 st.write("\n")
+
 
 st.subheader("Ejercicio 3 - Convertidor de temperatura", divider="rainbow")
 st.text("Enunciado:")
@@ -100,15 +101,102 @@ st.text("Enunciado:")
 st.text("Crea un formulario con: \n- Un campo de texto para el asunto. \n- Un área de texto para el mensaje. \n- Un botón de envío. \n- Al enviar, muestra los datos ingresados en un 'st.json' o 'st.write' solo si el mensaje no está vacío.")
 
 st.write("\n")
-asunto = st.text_input("Ingresa el asunto: ")
-mensaje = st.text_area("Ingresa el mensaje: ")
+asunto = st.text_input("Ingresa el asunto:")
+mensaje = st.text_area("Ingresa el mensaje:")
 
 if st.button("Enviar"):
-
-    code = '''{
-        f{asunto}
-        f{mensaje}
+    if asunto.strip() and mensaje.strip():
         
-    }'''
+        data = {
+            "asunto": asunto,
+            "mensaje": mensaje
+        }
+        
+        st.json(data)
+        st.success("✅")
+        
+    else:
+        st.warning("Algún campo está vacío, por favor completa ambos campos.")
+
+st.write("\n")
+st.write("\n")
+
+st.subheader("Ejercicio 6 - Login simulado (Session State)", divider="rainbow")
+st.text("Enunciado:")
+st.text("Crea dos campos: usuario y contraseña. \n-  Un boton 'Ingresar.' \n- Si el usuario es 'admin' y la contraseña es '1234', guarda en 'st.session_state' que el usuario está logueado y muestra un mensaje de éxito \n- Si ya esta logueado, muestra un boton 'Cerrar Sesion' que limpie el estado.")
+
+
+if "logueado" not in st.session_state:
+    st.session_state.logueado = False
+
+
+if not st.session_state.logueado:
+
+    user = st.text_input("Usuario:")
+    password = st.text_input("Contraseña:", type="password")
+
+    if st.button("Ingresar"):
+        if user == "admin" and password == "1234":
+            st.session_state.logueado = True
+            st.success("Has iniciado sesion")
+        else:
+            st.error("Usuario o contraseña incorrectos.")
+
+else:
+    st.write("Ya estas logueado")
+    if st.button("Cerrar Sesión"):
+        st.session_state.logueado = False
+        st.success("Has cerrado sesion")
+
+
     
-    st.code(code, language="python")
+st.write("\n")
+st.write("\n")
+
+
+
+st.subheader("Ejercicio 7 - Lista de Compras (Session State)", divider="rainbow")
+st.text("Enunciado:")
+st.text("- Un 'st.text_input' para ingresar un producto. \n- Dos botones: 'Agregar' y 'Limpiar Lista'. \n- Muestra la lista de productos agregados hasta el momento. La lista debe persistir aunque interactúes con otros widgets.")
+
+if "productos" not in st.session_state:
+    st.session_state.productos = []
+
+
+producto = st.text_input("Ingresa un producto")
+
+
+if st.button("Agregar"):
+    if producto != "":
+        st.session_state.productos.append(producto)
+        st.success("Producto agregado ✅")
+    else:
+        st.warning("Escribe un producto primero")
+
+
+if st.button("Limpiar Lista"):
+    st.session_state.productos = []
+    st.warning("Lista limpiada")
+
+
+st.write("### Lista de productos:")
+st.write(st.session_state.productos)
+
+
+st.write("\n")
+st.write("\n")
+
+
+
+st.subheader("Ejercicio 8 - Grafico interactivo", divider="rainbow")
+st.text("Enunciado:")
+st.text("- Usa un 'st.slider'  para seleccionar un número `N` entre 10 y 100. \n- Genera una lista de 'N' numeros aleatorios. \n- Muestra un `st.line_chart` con esos datos \n-  Añade un botón para 'Regenerar' los datos (pista: el botón hará rerun, lo que regenerará los aleatorios automáticamente)")
+
+N = st.slider("Selecciona la cantidad de números", 10, 100, 20)
+
+datos = [random.randint(0, 100) for _ in range(N)]
+
+st.line_chart(datos)
+
+if st.button("Regenerar"):
+    st.rerun()
